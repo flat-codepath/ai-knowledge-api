@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount the backend directory to persist the sqlite DB and Chroma DB inside it
+      - ./backend:/app/backend
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATABASE_URL=sqlite:////app/backend/sqlite_db
+      - CHROMA_PERSIST_DIRECTORY=/app/backend/chroma_db
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000/api/v1
